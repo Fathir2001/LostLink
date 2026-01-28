@@ -1,0 +1,30 @@
+# LostLink AI Service
+# Python FastAPI service for AI extraction, embedding, and matching
+# Designed to run on local NVIDIA GPU
+
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+pillow>=10.1.0
+numpy>=1.24.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+httpx>=0.25.0
+aiofiles>=23.2.0
+
+# AI/ML Libraries (choose based on your GPU and preferences)
+# For GPU inference with CUDA
+torch>=2.1.0
+transformers>=4.35.0
+sentence-transformers>=2.2.0
+
+# OCR
+easyocr>=1.7.0
+pytesseract>=0.3.10
+
+# Image processing
+opencv-python>=4.8.0
+
+# Optional: For smaller/faster models
+# optimum>=1.14.0
+# onnxruntime-gpu>=1.16.0
