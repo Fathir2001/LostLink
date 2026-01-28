@@ -43,16 +43,18 @@ class AuthRepository {
   Future<User?> getCurrentUser() async {
     try {
       final response = await _apiClient.get('/auth/me');
-      return User.fromJson(response.data['user']);
+      final data = response.data['data'] ?? response.data;
+      return User.fromJson(data['user']);
     } catch (e) {
       return null;
     }
   }
 
   /// Update user profile
-  Future<User> updateProfile(Map<String, dynamic> data) async {
-    final response = await _apiClient.patch('/auth/me', data: data);
-    return User.fromJson(response.data['user']);
+  Future<User> updateProfile(Map<String, dynamic> profileData) async {
+    final response = await _apiClient.patch('/auth/me', data: profileData);
+    final data = response.data['data'] ?? response.data;
+    return User.fromJson(data['user']);
   }
 
   /// Request password reset

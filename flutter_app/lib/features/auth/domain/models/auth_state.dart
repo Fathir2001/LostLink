@@ -48,10 +48,12 @@ class AuthResult {
   });
 
   factory AuthResult.fromJson(Map<String, dynamic> json) {
+    // Backend wraps response in 'data' field
+    final data = json['data'] ?? json;
     return AuthResult(
-      user: User.fromJson(json['user']),
-      token: json['token'],
-      refreshToken: json['refreshToken'],
+      user: User.fromJson(data['user']),
+      token: data['accessToken'] ?? data['token'],
+      refreshToken: data['refreshToken'],
     );
   }
 }

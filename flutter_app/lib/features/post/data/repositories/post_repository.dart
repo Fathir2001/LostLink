@@ -34,7 +34,7 @@ class PostFilters {
 
   Map<String, dynamic> toQueryParams() {
     return {
-      if (type != null) 'type': type == PostType.found ? 'FOUND' : 'LOST',
+      if (type != null) 'type': type == PostType.found ? 'found' : 'lost',
       if (category != null) 'category': category,
       if (country != null) 'country': country,
       if (city != null) 'city': city,
@@ -94,12 +94,17 @@ class PaginatedPosts {
   });
 
   factory PaginatedPosts.fromJson(Map<String, dynamic> json) {
+    // Backend wraps response in 'data' field with nested 'pagination'
+    final data = json['data'] ?? json;
+    final pagination = data['pagination'] ?? {};
+    final postsData = data['posts'] ?? [];
+    
     return PaginatedPosts(
-      posts: (json['posts'] as List).map((p) => Post.fromJson(p)).toList(),
-      total: json['total'] ?? 0,
-      page: json['page'] ?? 1,
-      totalPages: json['totalPages'] ?? 1,
-      hasMore: json['hasMore'] ?? false,
+      posts: (postsData as List).map((p) => Post.fromJson(p)).toList(),
+      total: pagination['total'] ?? postsData.length,
+      page: pagination['page'] ?? 1,
+      totalPages: pagination['pages'] ?? pagination['totalPages'] ?? 1,
+      hasMore: pagination['hasMore'] ?? false,
     );
   }
 }
@@ -124,19 +129,22 @@ class PostRepository {
   /// Get single post by ID
   Future<Post> getPostById(String id) async {
     final response = await _apiClient.get('/posts/$id');
-    return Post.fromJson(response.data['post']);
+    final data = response.data['data'] ?? response.data;
+    return Post.fromJson(data['post']);
   }
 
   /// Create new post
-  Future<Post> createPost(Map<String, dynamic> data) async {
-    final response = await _apiClient.post('/posts', data: data);
-    return Post.fromJson(response.data['post']);
+  Future<Post> createPost(Map<String, dynamic> postData) async {
+    final response = await _apiClient.post('/posts', data: postData);
+    final data = response.data['data'] ?? response.data;
+    return Post.fromJson(data['post']);
   }
 
   /// Update post
-  Future<Post> updatePost(String id, Map<String, dynamic> data) async {
-    final response = await _apiClient.patch('/posts/$id', data: data);
-    return Post.fromJson(response.data['post']);
+  Future<Post> updatePost(String id, Map<String, dynamic> updateData) async {
+    final response = await _apiClient.patch('/posts/$id', data: updateData);
+    final data = response.data['data'] ?? response.data;
+    return Post.fromJson(data['post']);
   }
 
   /// Delete post
@@ -149,7 +157,8 @@ class PostRepository {
     final List<String> urls = [];
     for (final path in filePaths) {
       final response = await _apiClient.uploadFile('/upload/image', path);
-      urls.add(response.data['url']);
+      final data = response.data['data'] ?? response.data;
+      urls.add(data['url']);
     }
     return urls;
   }
@@ -175,19 +184,22 @@ class PostRepository {
   /// Get user's posts
   Future<List<Post>> getUserPosts(String userId) async {
     final response = await _apiClient.get('/users/$userId/posts');
-    return (response.data['posts'] as List).map((p) => Post.fromJson(p)).toList();
+    final data = response.data['data'] ?? response.data;
+    return (data['posts'] as List).map((p) => Post.fromJson(p)).toList();
   }
 
   /// Get bookmarked posts
   Future<List<Post>> getBookmarkedPosts() async {
     final response = await _apiClient.get('/posts/bookmarks');
-    return (response.data['posts'] as List).map((p) => Post.fromJson(p)).toList();
+    final data = response.data['data'] ?? response.data;
+    return (data['posts'] as List).map((p) => Post.fromJson(p)).toList();
   }
 
   /// Get matched posts
   Future<List<PostMatch>> getMatches(String postId) async {
     final response = await _apiClient.get('/posts/$postId/matches');
-    return (response.data['matches'] as List)
+    final data = response.data['data'] ?? response.data;
+    return (data['matches'] as List)
         .map((m) => PostMatch.fromJson(m))
         .toList();
   }
@@ -197,7 +209,8 @@ class PostRepository {
     final response = await _apiClient.patch('/posts/$id/status', data: {
       'status': 'resolved',
     });
-    return Post.fromJson(response.data['post']);
+    final data = response.data['data'] ?? response.data;
+    return Post.fromJson(data['post']);
   }
 
   /// Generate shareable caption
@@ -205,7 +218,8 @@ class PostRepository {
     final response = await _apiClient.post('/posts/$postId/caption', data: {
       if (platform != null) 'platform': platform,
     });
-    return response.data['caption'];
+    final data = response.data['data'] ?? response.data;
+    return data['caption'];
   }
 }
 

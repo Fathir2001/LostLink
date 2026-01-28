@@ -127,8 +127,9 @@ class _AuthInterceptor extends Interceptor {
             data: {'refreshToken': refreshToken},
           );
 
-          final newToken = response.data['token'];
-          final newRefreshToken = response.data['refreshToken'];
+          final data = response.data['data'] ?? response.data;
+          final newToken = data['accessToken'] ?? data['token'];
+          final newRefreshToken = data['refreshToken'];
 
           await _secureStorage.write(key: AppConstants.accessTokenKey, value: newToken);
           await _secureStorage.write(key: AppConstants.refreshTokenKey, value: newRefreshToken);
