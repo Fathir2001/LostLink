@@ -567,27 +567,47 @@ class _ImageGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Filter out invalid image URLs
+    final validImages = images.where((url) => 
+      url.startsWith('http://') || url.startsWith('https://')
+    ).toList();
+    
+    if (validImages.isEmpty) {
+      return Container(
+        color: Colors.grey[200],
+        child: const Center(
+          child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+        ),
+      );
+    }
+    
     return Stack(
       fit: StackFit.expand,
       children: [
         PageView.builder(
-          itemCount: images.length,
+          itemCount: validImages.length,
           onPageChanged: onIndexChanged,
           itemBuilder: (context, index) {
             return CachedNetworkImage(
-              imageUrl: images[index],
+              imageUrl: validImages[index],
               fit: BoxFit.cover,
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey[200],
+                child: const Center(
+                  child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+                ),
+              ),
             );
           },
         ),
-        if (images.length > 1)
+        if (validImages.length > 1)
           Positioned(
             bottom: 16,
             left: 0,
             right: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(images.length, (index) {
+              children: List.generate(validImages.length, (index) {
                 return Container(
                   width: 8,
                   height: 8,

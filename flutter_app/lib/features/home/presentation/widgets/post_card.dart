@@ -29,7 +29,7 @@ class PostCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image or placeholder
-            if (post.hasImages)
+            if (post.hasImages && _isValidImageUrl(post.thumbnailUrl))
               AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Stack(
@@ -275,4 +275,14 @@ class _PostTypeBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Helper function to validate image URLs
+bool _isValidImageUrl(String? url) {
+  if (url == null || url.isEmpty) return false;
+  // Filter out blob URLs, data URLs, and encoded URLs
+  if (url.startsWith('blob:') || url.startsWith('blob%3A')) return false;
+  if (url.startsWith('data:')) return false;
+  // Only allow http/https URLs
+  return url.startsWith('http://') || url.startsWith('https://');
 }

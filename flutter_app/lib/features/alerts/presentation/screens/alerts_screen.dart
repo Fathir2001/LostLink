@@ -371,7 +371,8 @@ class _AlertTile extends StatelessWidget {
         break;
     }
 
-    if (alert.imageUrl != null) {
+    if (alert.imageUrl != null && 
+        (alert.imageUrl!.startsWith('http://') || alert.imageUrl!.startsWith('https://'))) {
       return Stack(
         children: [
           ClipRRect(
@@ -381,6 +382,15 @@ class _AlertTile extends StatelessWidget {
               width: 48,
               height: 48,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color),
+              ),
             ),
           ),
           Positioned(

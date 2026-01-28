@@ -65,7 +65,7 @@ class Post extends Equatable {
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['_id'] ?? json['id'],
-      type: json['type'] == 'FOUND' ? PostType.found : PostType.lost,
+      type: (json['type']?.toString().toLowerCase() == 'found') ? PostType.found : PostType.lost,
       status: _parseStatus(json['status']),
       title: json['title'] ?? '',
       description: json['description'] ?? '',
