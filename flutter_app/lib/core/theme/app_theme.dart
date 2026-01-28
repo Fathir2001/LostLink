@@ -28,22 +28,19 @@ class AppTheme {
         onError: Colors.white,
       ),
       textTheme: lightTextTheme,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
         backgroundColor: AppColors.surfaceLight,
         foregroundColor: AppColors.textPrimaryLight,
         surfaceTintColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           systemNavigationBarColor: AppColors.surfaceLight,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
-        titleTextStyle: TextStyle(
-          fontFamily: AppTypography.fontFamily,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+        titleTextStyle: AppTypography.headlineSmall.copyWith(
           color: AppColors.textPrimaryLight,
         ),
       ),
@@ -139,7 +136,7 @@ class AppTheme {
           side: const BorderSide(color: AppColors.dividerLight),
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceLight,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textTertiaryLight,
@@ -210,22 +207,19 @@ class AppTheme {
         onError: Colors.white,
       ),
       textTheme: darkTextTheme,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
         backgroundColor: AppColors.surfaceDark,
         foregroundColor: AppColors.textPrimaryDark,
         surfaceTintColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
           systemNavigationBarColor: AppColors.surfaceDark,
           systemNavigationBarIconBrightness: Brightness.light,
         ),
-        titleTextStyle: TextStyle(
-          fontFamily: AppTypography.fontFamily,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+        titleTextStyle: AppTypography.headlineSmall.copyWith(
           color: AppColors.textPrimaryDark,
         ),
       ),
@@ -321,7 +315,7 @@ class AppTheme {
           side: const BorderSide(color: AppColors.dividerDark),
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceDark,
         selectedItemColor: AppColors.primaryLight,
         unselectedItemColor: AppColors.textTertiaryDark,

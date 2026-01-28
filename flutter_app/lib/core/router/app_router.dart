@@ -16,9 +16,9 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/profile/presentation/screens/my_posts_screen.dart';
 import '../../features/profile/presentation/screens/bookmarks_screen.dart';
-import '../../features/profile/presentation/screens/settings_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
-import '../../features/onboarding/presentation/screens/splash_screen.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/shell_scaffold.dart';
 

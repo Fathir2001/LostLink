@@ -12,8 +12,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.user;
+    final authState = ref.watch(authStateProvider);
+    final user = authState.valueOrNull?.user;
 
     return Scaffold(
       appBar: AppBar(
@@ -80,9 +80,9 @@ class ProfileScreen extends ConsumerWidget {
               title: 'Preferences',
               items: [
                 _ThemeMenuItem(
-                  currentTheme: ref.watch(themeProvider),
+                  currentTheme: ref.watch(themeModeProvider),
                   onThemeChanged: (mode) {
-                    ref.read(themeProvider.notifier).setTheme(mode);
+                    ref.read(themeModeProvider.notifier).setThemeMode(mode);
                   },
                 ),
                 _MenuItem(
@@ -194,7 +194,7 @@ class ProfileScreen extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(authProvider.notifier).logout();
+              ref.read(authStateProvider.notifier).logout();
               context.go('/login');
             },
             child: const Text('Log Out'),

@@ -4,10 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/config/env_config.dart';
 import 'core/services/notification_service.dart';
+import 'core/providers/theme_provider.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,11 +18,20 @@ Future<void> main() async {
   // Initialize Hive for local storage
   await Hive.initFlutter();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
 
-  // Initialize push notifications
-  await NotificationService.instance.initialize();
+  // Initialize Firebase with platform-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize push notifications (skip on web)
+  try {
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('Notification service initialization skipped: $e');
+  }
 
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
@@ -37,6 +49,11 @@ Future<void> main() async {
     ),
   );
 
+  // Provider overrides
+  final overrides = [
+    sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+  ];
+
   // Initialize Sentry for crash reporting (optional)
   if (EnvConfig.sentryDsn.isNotEmpty) {
     await SentryFlutter.init(
@@ -46,10 +63,10 @@ Future<void> main() async {
         options.environment = EnvConfig.environment;
       },
       appRunner: () => runApp(
-        const ProviderScope(child: LostLinkApp()),
+        ProviderScope(overrides: overrides, child: const LostLinkApp()),
       ),
     );
   } else {
-    runApp(const ProviderScope(child: LostLinkApp()));
+    runApp(ProviderScope(overrides: overrides, child: const LostLinkApp()));
   }
 }

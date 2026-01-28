@@ -39,19 +39,31 @@ class VisionModel:
         ).to(device)
         self.detection_model.eval()
         
-        # Caption model (smaller BLIP model for efficiency)
+        # Caption model (optional - may fail on slow networks)
         print("📥 Loading captioning model...")
         caption_model = "Salesforce/blip-image-captioning-base"
         
-        self.caption_processor = BlipProcessor.from_pretrained(
-            caption_model,
-            cache_dir=cache_dir,
-        )
-        self.caption_model = BlipForConditionalGeneration.from_pretrained(
-            caption_model,
-            cache_dir=cache_dir,
-        ).to(device)
-        self.caption_model.eval()
+        self.caption_processor = None
+        self.caption_model = None
+        
+        try:
+            self.caption_processor = BlipProcessor.from_pretrained(
+                caption_model,
+                cache_dir=cache_dir,
+                local_files_only=False,
+            )
+            self.caption_model = BlipForConditionalGeneration.from_pretrained(
+                caption_model,
+                cache_dir=cache_dir,
+                local_files_only=False,
+            ).to(device)
+            self.caption_model.eval()
+            print("✅ Captioning model loaded successfully")
+        except Exception as e:
+            print(f"⚠️ Captioning model failed to load: {e}")
+            print("   Image captioning will be disabled, but object detection will work.")
+            self.caption_processor = None
+            self.caption_model = None
         
         # Category mapping for common lost & found items
         self.item_categories = {
@@ -168,6 +180,10 @@ class VisionModel:
         """
         Generate descriptive caption for image
         """
+        # Check if captioning model is available
+        if self.caption_model is None or self.caption_processor is None:
+            return "Image caption not available (model not loaded)"
+        
         with torch.no_grad():
             inputs = self.caption_processor(
                 images=image,

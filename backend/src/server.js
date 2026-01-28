@@ -67,37 +67,37 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/matches', matchRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/posts', postRoutes);
+app.use('/api/v1/upload', uploadRoutes);
+app.use('/api/v1/matches', matchRoutes);
+app.use('/api/v1/users', userRoutes);
 
 // API Documentation endpoint
-app.get('/api', (req, res) => {
+app.get('/api/v1', (req, res) => {
   res.json({
     success: true,
     message: 'LostLink API v1',
     endpoints: {
       auth: {
-        'POST /api/auth/register': 'Register new user',
-        'POST /api/auth/login': 'Login user',
-        'POST /api/auth/refresh': 'Refresh access token',
-        'POST /api/auth/forgot-password': 'Request password reset',
-        'POST /api/auth/reset-password': 'Reset password with token',
-        'GET /api/auth/me': 'Get current user profile',
+        'POST /api/v1/auth/register': 'Register new user',
+        'POST /api/v1/auth/login': 'Login user',
+        'POST /api/v1/auth/refresh': 'Refresh access token',
+        'POST /api/v1/auth/forgot-password': 'Request password reset',
+        'POST /api/v1/auth/reset-password': 'Reset password with token',
+        'GET /api/v1/auth/me': 'Get current user profile',
       },
       posts: {
-        'GET /api/posts': 'Get all posts with filters',
-        'GET /api/posts/:id': 'Get single post',
-        'POST /api/posts': 'Create new post',
-        'PUT /api/posts/:id': 'Update post',
-        'DELETE /api/posts/:id': 'Delete post',
-        'POST /api/posts/:id/report': 'Report a post',
-        'POST /api/posts/:id/bookmark': 'Bookmark a post',
+        'GET /api/v1/posts': 'Get all posts with filters',
+        'GET /api/v1/posts/:id': 'Get single post',
+        'POST /api/v1/posts': 'Create new post',
+        'PUT /api/v1/posts/:id': 'Update post',
+        'DELETE /api/v1/posts/:id': 'Delete post',
+        'POST /api/v1/posts/:id/report': 'Report a post',
+        'POST /api/v1/posts/:id/bookmark': 'Bookmark a post',
       },
       matches: {
-        'GET /api/matches': 'Get matches for user posts',
+        'GET /api/v1/matches': 'Get matches for user posts',
         'GET /api/matches/:id': 'Get single match details',
         'POST /api/matches/:id/confirm': 'Confirm a match',
         'POST /api/matches/:id/reject': 'Reject a match',

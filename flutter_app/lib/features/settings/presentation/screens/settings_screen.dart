@@ -54,9 +54,9 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Appearance',
             children: [
               _ThemeTile(
-                currentTheme: ref.watch(themeProvider),
+                currentTheme: ref.watch(themeModeProvider),
                 onChanged: (mode) {
-                  ref.read(themeProvider.notifier).setTheme(mode);
+                  ref.read(themeModeProvider.notifier).setThemeMode(mode);
                 },
               ),
             ],

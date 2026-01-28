@@ -27,7 +27,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = ref.read(authProvider).user;
+    final authState = ref.read(authStateProvider);
+    final user = authState.valueOrNull?.user;
     _nameController = TextEditingController(text: user?.name ?? '');
     _phoneController = TextEditingController(text: user?.phone ?? '');
     _bioController = TextEditingController();
@@ -108,7 +109,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authProvider).user;
+    final authState = ref.watch(authStateProvider);
+    final user = authState.valueOrNull?.user;
 
     return Scaffold(
       appBar: AppBar(
@@ -232,7 +234,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: 'Save Changes',
+                  text: 'Save Changes',
                   isLoading: _isLoading,
                   onPressed: _saveProfile,
                 ),

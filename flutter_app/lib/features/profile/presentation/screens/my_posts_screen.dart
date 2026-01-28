@@ -56,7 +56,7 @@ class MyPostsScreen extends ConsumerWidget {
           ),
           data: (posts) {
             final activePosts = posts.where((p) => p.status == PostStatus.active).toList();
-            final resolvedPosts = posts.where((p) => p.status == PostStatus.reunited).toList();
+            final resolvedPosts = posts.where((p) => p.status == PostStatus.resolved).toList();
 
             return TabBarView(
               children: [
@@ -220,11 +220,11 @@ class _MyPostCard extends StatelessWidget {
     switch (status) {
       case PostStatus.active:
         return AppColors.success;
-      case PostStatus.reunited:
+      case PostStatus.resolved:
         return AppColors.found;
       case PostStatus.expired:
         return AppColors.textSecondaryLight;
-      case PostStatus.closed:
+      case PostStatus.hidden:
         return AppColors.textSecondaryLight;
     }
   }
@@ -233,12 +233,12 @@ class _MyPostCard extends StatelessWidget {
     switch (status) {
       case PostStatus.active:
         return 'ACTIVE';
-      case PostStatus.reunited:
-        return 'REUNITED';
+      case PostStatus.resolved:
+        return 'RESOLVED';
       case PostStatus.expired:
         return 'EXPIRED';
-      case PostStatus.closed:
-        return 'CLOSED';
+      case PostStatus.hidden:
+        return 'HIDDEN';
     }
   }
 

@@ -67,6 +67,8 @@ ENV/
 *.safetensors
 *.onnx
 models_cache/
+ai_service/models/
+.cache/huggingface/
 
 # Flutter
 flutter_app/.dart_tool/
