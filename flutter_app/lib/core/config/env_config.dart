@@ -12,7 +12,7 @@ class EnvConfig {
   /// AI Service URL (FastAPI running locally)
   static const String aiServiceUrl = String.fromEnvironment(
     'AI_SERVICE_URL',
-    defaultValue: 'http://localhost:8000',
+    defaultValue: 'http://localhost:8001',
   );
 
   /// Cloudinary configuration

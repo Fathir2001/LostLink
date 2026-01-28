@@ -111,15 +111,25 @@ class CaptionRequest(BaseModel):
 
 
 class ExtractionResult(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    category: Optional[str] = None
-    attributes: Dict[str, Any] = {}
+    """Response format matching Flutter AIExtractionResult"""
+    post_type: str = "LOST"
+    category: str = "other"
+    title: str = ""
+    clean_description: str = ""
+    description: Optional[str] = None  # Legacy field
+    item_attributes: Dict[str, Any] = {}
+    attributes: Dict[str, Any] = {}  # Legacy field
     location: Optional[Dict[str, Any]] = None
-    date: Optional[str] = None
-    confidence: float = 0.0
+    date_time: Optional[str] = None
+    date: Optional[str] = None  # Legacy field
+    contact_info: Optional[Dict[str, Any]] = None
+    reward: Optional[str] = None
+    tags: List[str] = []
+    confidence_scores: Dict[str, float] = {}
+    confidence: float = 0.0  # Legacy field
     detected_objects: List[Dict[str, Any]] = []
     extracted_text: Optional[str] = None
+    original_text: Optional[str] = None
 
 
 class EmbeddingResult(BaseModel):
