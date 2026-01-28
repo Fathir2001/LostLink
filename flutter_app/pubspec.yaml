@@ -26,8 +26,8 @@ dependencies:
   gap: ^3.0.1
 
   # Forms & Validation
-  flutter_form_builder: ^9.1.1
-  form_builder_validators: ^9.1.0
+  flutter_form_builder: ^9.5.0
+  form_builder_validators: ^11.1.2
 
   # Networking
   dio: ^5.4.0
@@ -65,6 +65,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   collection: ^1.18.0
+  google_fonts: ^6.1.0
 
   # Analytics & Crash Reporting
   sentry_flutter: ^7.14.0
@@ -103,15 +104,6 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/animations/
-    - assets/fonts/
 
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
+  # Using Google Fonts package instead of local fonts
+  # No need to download font files!

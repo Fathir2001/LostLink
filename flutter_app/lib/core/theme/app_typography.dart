@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
-/// App typography styles
+/// App typography styles using Google Fonts
 class AppTypography {
   AppTypography._();
 
-  static const String fontFamily = 'Inter';
+  // Using Google Fonts - no need to download font files!
+  static TextStyle get _baseStyle => GoogleFonts.inter();
+  
+  static String get fontFamily => GoogleFonts.inter().fontFamily ?? 'Inter';
 
   // Display Styles
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displayLarge => GoogleFonts.inter(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     letterSpacing: -0.5,
     height: 1.2,
   );
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displayMedium => GoogleFonts.inter(
     fontSize: 28,
     fontWeight: FontWeight.bold,
     letterSpacing: -0.25,
     height: 1.25,
   );
 
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displaySmall => GoogleFonts.inter(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     letterSpacing: 0,
@@ -33,24 +34,21 @@ class AppTypography {
   );
 
   // Headline Styles
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get headlineLarge => GoogleFonts.inter(
     fontSize: 22,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.35,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get headlineMedium => GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.4,
   );
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get headlineSmall => GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
@@ -58,24 +56,21 @@ class AppTypography {
   );
 
   // Title Styles
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleLarge => GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.w500,
     letterSpacing: 0,
     height: 1.4,
   );
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleMedium => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
     height: 1.45,
   );
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleSmall => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
@@ -83,24 +78,21 @@ class AppTypography {
   );
 
   // Body Styles
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get bodyLarge => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     letterSpacing: 0.15,
     height: 1.5,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get bodyMedium => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     letterSpacing: 0.25,
     height: 1.5,
   );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get bodySmall => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     letterSpacing: 0.4,
@@ -108,24 +100,21 @@ class AppTypography {
   );
 
   // Label Styles
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelLarge => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
     height: 1.4,
   );
 
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelMedium => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
     height: 1.4,
   );
 
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelSmall => GoogleFonts.inter(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
@@ -133,8 +122,7 @@ class AppTypography {
   );
 
   // Button Text
-  static const TextStyle button = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get button => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
@@ -142,8 +130,7 @@ class AppTypography {
   );
 
   // Caption
-  static const TextStyle caption = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get caption => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     letterSpacing: 0.4,
@@ -151,8 +138,7 @@ class AppTypography {
   );
 
   // Overline
-  static const TextStyle overline = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get overline => GoogleFonts.inter(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     letterSpacing: 1.5,
