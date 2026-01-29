@@ -134,6 +134,12 @@ class AppColors {
     colors: [Color(0xFF5DD67C), success],
   );
 
+  static const LinearGradient errorGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFFF6B6B), error],
+  );
+
   static const LinearGradient darkGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
