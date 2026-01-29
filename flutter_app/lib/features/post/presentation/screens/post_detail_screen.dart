@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -12,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/glass_widgets.dart';
+import '../../../../core/widgets/platform_network_image.dart';
 import '../../data/repositories/post_repository.dart';
 import '../../data/repositories/ai_repository.dart';
 import '../../domain/models/post.dart';
@@ -661,10 +661,10 @@ class _GlassImageGallery extends StatelessWidget {
           itemCount: validImages.length,
           onPageChanged: onIndexChanged,
           itemBuilder: (context, index) {
-            return CachedNetworkImage(
+            return PlatformNetworkImage(
               imageUrl: validImages[index],
               fit: BoxFit.cover,
-              errorWidget: (context, url, error) => Container(
+              errorWidget: Container(
                 decoration: BoxDecoration(
                   gradient: AppColors.darkGradient,
                 ),
@@ -1067,7 +1067,7 @@ class _GlassUserCard extends StatelessWidget {
               radius: 26,
               backgroundColor: isDark ? AppColors.backgroundDark : Colors.white,
               backgroundImage: post.userAvatar != null
-                  ? CachedNetworkImageProvider(post.userAvatar!)
+                  ? platformNetworkImageProvider(post.userAvatar!)
                   : null,
               child: post.userAvatar == null
                   ? Text(

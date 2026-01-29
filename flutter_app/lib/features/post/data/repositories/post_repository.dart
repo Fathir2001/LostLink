@@ -152,15 +152,18 @@ class PostRepository {
     await _apiClient.delete('/posts/$id');
   }
 
-  /// Upload images
-  Future<List<String>> uploadImages(List<String> filePaths) async {
-    final List<String> urls = [];
+  /// Upload images - returns list of image objects for backend
+  Future<List<Map<String, dynamic>>> uploadImages(List<String> filePaths) async {
+    final List<Map<String, dynamic>> imageObjects = [];
     for (final path in filePaths) {
       final response = await _apiClient.uploadFile('/upload/image', path, fieldName: 'image');
       final data = response.data['data'] ?? response.data;
-      urls.add(data['url']);
+      imageObjects.add({
+        'url': data['url'],
+        'publicId': data['publicId'],
+      });
     }
-    return urls;
+    return imageObjects;
   }
 
   /// Bookmark post

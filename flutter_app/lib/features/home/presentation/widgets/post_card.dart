@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/platform_network_image.dart';
 import '../../../post/domain/models/post.dart';
 import '../../../post/domain/models/category.dart';
 
@@ -151,10 +151,10 @@ class PostCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CachedNetworkImage(
+          PlatformNetworkImage(
             imageUrl: post.thumbnailUrl!,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
+            placeholder: Container(
               color: AppColors.dividerLight,
               child: Center(
                 child: CircularProgressIndicator(
@@ -163,7 +163,7 @@ class PostCard extends StatelessWidget {
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Container(
+            errorWidget: Container(
               color: AppColors.dividerLight,
               child: const Icon(Icons.image_not_supported_outlined),
             ),

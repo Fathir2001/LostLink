@@ -63,46 +63,85 @@ class Post extends Equatable {
   String? get thumbnailUrl => hasImages ? images.first : null;
 
   factory Post.fromJson(Map<String, dynamic> json) {
+    // Handle images - can be list of strings or list of objects with url
+    List<String> parseImages(dynamic imagesJson) {
+      if (imagesJson == null) return [];
+      if (imagesJson is! List) return [];
+      return imagesJson.map<String>((img) {
+        if (img is String) return img;
+        if (img is Map<String, dynamic>) return img['url']?.toString() ?? '';
+        return '';
+      }).where((url) => url.isNotEmpty).toList();
+    }
+
+    // Safe list parsing
+    List<String> parseStringList(dynamic listJson) {
+      if (listJson == null) return [];
+      if (listJson is! List) return [];
+      return listJson.map((e) => e?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+    }
+
+    final user = json['user'];
+    String resolvedUserId = (json['userId'] ?? '').toString();
+    String resolvedUserName = (json['userName'] ?? 'Unknown').toString();
+    String? resolvedUserAvatar = json['userAvatar']?.toString();
+    if (user is Map) {
+      resolvedUserId = (user['_id'] ?? resolvedUserId).toString();
+      resolvedUserName = (user['name'] ?? resolvedUserName).toString();
+      resolvedUserAvatar = user['avatarUrl']?.toString() ?? resolvedUserAvatar;
+    } else if (user != null && resolvedUserId.isEmpty) {
+      resolvedUserId = user.toString();
+    }
+
     return Post(
-      id: json['_id'] ?? json['id'],
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
       type: (json['type']?.toString().toLowerCase() == 'found') ? PostType.found : PostType.lost,
-      status: _parseStatus(json['status']),
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      category: json['category'] ?? 'other',
-      images: List<String>.from(json['images'] ?? []),
-      location: json['location'] != null
-          ? PostLocation.fromJson(json['location'])
+      status: _parseStatus(json['status']?.toString()),
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      category: (json['category'] ?? 'other').toString(),
+      images: parseImages(json['images']),
+      location: json['location'] != null && json['location'] is Map
+          ? PostLocation.fromJson(Map<String, dynamic>.from(json['location']))
           : null,
-      lostFoundDate: json['lostFoundDate'] != null
-          ? DateTime.parse(json['lostFoundDate'])
+      lostFoundDate: json['lostFoundDate'] != null || json['date'] != null
+          ? _parseDateTime(json['lostFoundDate'] ?? json['date'])
           : null,
-      attributes: json['attributes'] != null
-          ? ItemAttributes.fromJson(json['attributes'])
+      attributes: json['attributes'] != null && json['attributes'] is Map
+          ? ItemAttributes.fromJson(Map<String, dynamic>.from(json['attributes']))
           : null,
-      contactInfo: json['contactInfo'] != null
-          ? ContactInfo.fromJson(json['contactInfo'])
+      contactInfo: json['contactInfo'] != null && json['contactInfo'] is Map
+          ? ContactInfo.fromJson(Map<String, dynamic>.from(json['contactInfo']))
           : null,
-      reward: json['reward'],
-      tags: List<String>.from(json['tags'] ?? []),
-      userId: json['userId'] ?? json['user']?['_id'] ?? '',
-      userName: json['userName'] ?? json['user']?['name'] ?? 'Unknown',
-      userAvatar: json['userAvatar'] ?? json['user']?['avatarUrl'],
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : DateTime.now(),
-      viewCount: json['viewCount'] ?? 0,
-      bookmarkedBy: List<String>.from(json['bookmarkedBy'] ?? []),
-      aiMetadata: json['aiMetadata'] != null
-          ? AIMetadata.fromJson(json['aiMetadata'])
+      reward: _parseReward(json['reward']),
+      tags: parseStringList(json['tags']),
+      userId: resolvedUserId,
+      userName: resolvedUserName,
+      userAvatar: resolvedUserAvatar,
+      createdAt: _parseDateTime(json['createdAt']),
+      updatedAt: _parseDateTime(json['updatedAt']),
+      viewCount: _parseInt(json['viewCount']),
+      bookmarkedBy: parseStringList(json['bookmarkedBy']),
+      aiMetadata: json['aiMetadata'] != null && json['aiMetadata'] is Map
+          ? AIMetadata.fromJson(Map<String, dynamic>.from(json['aiMetadata']))
           : null,
-      matches: json['matches'] != null
-          ? (json['matches'] as List).map((m) => PostMatch.fromJson(m)).toList()
+      matches: json['matches'] != null && json['matches'] is List
+          ? (json['matches'] as List).map((m) => PostMatch.fromJson(Map<String, dynamic>.from(m))).toList()
           : null,
     );
+  }
+
+  static DateTime _parseDateTime(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is DateTime) return value;
+    if (value is String) {
+      try {
+        return DateTime.parse(value);
+      } catch (_) {
+        return DateTime.now();
+      }
+    }
+    return DateTime.now();
   }
 
   static PostStatus _parseStatus(String? status) {
@@ -116,6 +155,27 @@ class Post extends Equatable {
       default:
         return PostStatus.active;
     }
+  }
+
+  static String? _parseReward(dynamic reward) {
+    if (reward == null) return null;
+    if (reward is String) return reward.isNotEmpty ? reward : null;
+    if (reward is Map) {
+      // Handle reward object from backend
+      final description = reward['description']?.toString();
+      final amount = reward['amount'];
+      if (description != null && description.isNotEmpty) return description;
+      if (amount != null) return '\$$amount';
+    }
+    return null;
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -225,12 +285,25 @@ class PostLocation extends Equatable {
   bool get hasCoordinates => latitude != null && longitude != null;
 
   factory PostLocation.fromJson(Map<String, dynamic> json) {
+    // Extract latitude/longitude from coordinates if present
+    double? lat, lng;
+    if (json['coordinates'] != null) {
+      final coords = json['coordinates'];
+      if (coords is Map && coords['coordinates'] is List) {
+        final coordList = coords['coordinates'] as List;
+        if (coordList.length >= 2) {
+          lng = (coordList[0] as num?)?.toDouble();
+          lat = (coordList[1] as num?)?.toDouble();
+        }
+      }
+    }
+    
     return PostLocation(
-      country: json['country'],
-      city: json['city'],
-      address: json['address'],
-      latitude: json['latitude']?.toDouble(),
-      longitude: json['longitude']?.toDouble(),
+      country: json['country']?.toString(),
+      city: json['city']?.toString(),
+      address: json['address']?.toString() ?? json['description']?.toString(),
+      latitude: lat ?? json['latitude']?.toDouble(),
+      longitude: lng ?? json['longitude']?.toDouble(),
     );
   }
 
@@ -398,11 +471,11 @@ class PostMatch extends Equatable {
 
   factory PostMatch.fromJson(Map<String, dynamic> json) {
     return PostMatch(
-      matchedPostId: json['matchedPostId'] ?? json['postId'],
+      matchedPostId: (json['matchedPostId'] ?? json['postId'] ?? json['_id'] ?? '').toString(),
       score: (json['score'] ?? 0).toDouble(),
-      title: json['title'],
-      thumbnailUrl: json['thumbnailUrl'],
-      type: json['type'] == 'FOUND' ? PostType.found : PostType.lost,
+      title: json['title']?.toString(),
+      thumbnailUrl: json['thumbnailUrl']?.toString(),
+      type: json['type']?.toString().toUpperCase() == 'FOUND' ? PostType.found : PostType.lost,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,

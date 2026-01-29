@@ -125,22 +125,24 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
     try {
       final postRepo = ref.read(postRepositoryProvider);
 
-      List<String> imageUrls = [];
+      List<Map<String, dynamic>> imageObjects = [];
       if (_images.isNotEmpty) {
-        imageUrls = await postRepo.uploadImages(_images);
+        imageObjects = await postRepo.uploadImages(_images);
       }
 
       final postData = {
-        'type': _postType == PostType.found ? 'FOUND' : 'LOST',
+        'type': _postType == PostType.found ? 'found' : 'lost',
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'category': _category,
-        'images': imageUrls,
+        'images': imageObjects,
         'location': {
-          'address': _locationController.text.trim(),
+          'description': _locationController.text.trim(),
         },
-        'lostFoundDate': _lostFoundDate?.toIso8601String(),
-        'reward': _postType == PostType.lost ? _rewardController.text.trim() : null,
+        'date': _lostFoundDate?.toIso8601String(),
+        'reward': _postType == PostType.lost && _rewardController.text.isNotEmpty 
+            ? {'description': _rewardController.text.trim()} 
+            : null,
         'aiMetadata': _aiMetadata,
       };
 
