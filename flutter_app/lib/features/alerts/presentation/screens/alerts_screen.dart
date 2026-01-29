@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/glass_widgets.dart';
 import '../../../shared/widgets/empty_state.dart';
 
 // Alert types
@@ -161,124 +163,266 @@ class AlertsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final alertsAsync = ref.watch(alertsProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alerts'),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'read_all':
-                  ref.read(alertsProvider.notifier).markAllAsRead();
-                  break;
-                case 'clear_all':
-                  _showClearConfirmation(context, ref);
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'read_all',
-                child: Row(
-                  children: [
-                    Icon(Icons.done_all, size: 20),
-                    SizedBox(width: 8),
-                    Text('Mark all as read'),
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: GradientText(
+                text: 'Alerts',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                gradient: AppColors.secondaryGradient,
+              ),
+              actions: [
+                PopupMenuButton<String>(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.black.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.more_horiz_rounded,
+                      color: isDark ? Colors.white70 : AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'read_all':
+                        ref.read(alertsProvider.notifier).markAllAsRead();
+                        break;
+                      case 'clear_all':
+                        _showClearConfirmation(context, ref);
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'read_all',
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.done_all_rounded, size: 16, color: Colors.white),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('Mark all as read'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'clear_all',
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.delete_sweep_rounded, size: 16, color: AppColors.error),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('Clear all'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              const PopupMenuItem(
-                value: 'clear_all',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_sweep, size: 20),
-                    SizedBox(width: 8),
-                    Text('Clear all'),
-                  ],
-                ),
-              ),
-            ],
+                const SizedBox(width: 8),
+              ],
+            ),
           ),
-        ],
-      ),
-      body: alertsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => ErrorState(
-          message: error.toString(),
-          onRetry: () => ref.read(alertsProvider.notifier).refresh(),
         ),
-        data: (alerts) {
-          if (alerts.isEmpty) {
-            return EmptyState(
-              icon: Icons.notifications_none,
-              title: 'No alerts yet',
-              message: 'You\'ll be notified when there are matches for your items or when someone contacts you.',
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => ref.read(alertsProvider.notifier).refresh(),
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: alerts.length,
-              itemBuilder: (context, index) {
-                final alert = alerts[index];
-                return _AlertTile(
-                  alert: alert,
-                  onTap: () => _handleAlertTap(context, ref, alert),
-                  onDismiss: () {
-                    ref.read(alertsProvider.notifier).delete(alert.id);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Alert deleted'),
-                        action: SnackBarAction(
-                          label: 'Undo',
-                          onPressed: () {
-                            // Would need to implement undo logic
-                          },
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: isDark ? AppColors.darkGradient : AppColors.heroGradient,
+        ),
+        child: alertsAsync.when(
+          loading: () => const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(AppColors.secondary),
+            ),
+          ),
+          error: (error, stack) => ErrorState(
+            message: error.toString(),
+            onRetry: () => ref.read(alertsProvider.notifier).refresh(),
+          ),
+          data: (alerts) {
+            if (alerts.isEmpty) {
+              return Center(
+                child: GlassContainer(
+                  margin: const EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(32),
+                  borderRadius: 24,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: AppColors.secondaryGradient,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(
+                          Icons.notifications_none_rounded,
+                          color: Colors.white,
+                          size: 40,
                         ),
                       ),
-                    );
-                  },
-                ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.05, end: 0);
-              },
-            ),
-          );
-        },
+                      const SizedBox(height: 20),
+                      Text(
+                        'No alerts yet',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'You\'ll be notified when there are\nmatches for your items',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondaryLight,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => ref.read(alertsProvider.notifier).refresh(),
+              color: AppColors.secondary,
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 100, 16, 16),
+                itemCount: alerts.length,
+                itemBuilder: (context, index) {
+                  final alert = alerts[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _AlertTile(
+                      alert: alert,
+                      onTap: () => _handleAlertTap(context, ref, alert),
+                      onDismiss: () {
+                        ref.read(alertsProvider.notifier).delete(alert.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Alert deleted'),
+                            backgroundColor: AppColors.surfaceDark,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              textColor: AppColors.secondary,
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.05, end: 0);
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
 
   void _handleAlertTap(BuildContext context, WidgetRef ref, AlertItem alert) {
-    // Mark as read
     ref.read(alertsProvider.notifier).markAsRead(alert.id);
-
-    // Navigate based on type
     if (alert.postId != null) {
       context.push('/post/${alert.postId}');
     }
   }
 
   void _showClearConfirmation(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear all alerts?'),
-        content: const Text('This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: AlertDialog(
+          backgroundColor: isDark
+              ? AppColors.surfaceDark.withOpacity(0.9)
+              : Colors.white.withOpacity(0.9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          TextButton(
-            onPressed: () {
-              ref.read(alertsProvider.notifier).clearAll();
-              Navigator.pop(context);
-            },
-            child: const Text('Clear'),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.delete_sweep_rounded, color: AppColors.error),
+              ),
+              const SizedBox(width: 12),
+              const Text('Clear all alerts?'),
+            ],
           ),
-        ],
+          content: const Text('This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.error, AppColors.error.withRed(220)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  ref.read(alertsProvider.notifier).clearAll();
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Clear',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -297,77 +441,122 @@ class _AlertTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Dismissible(
       key: Key(alert.id),
       direction: DismissDirection.endToStart,
       onDismissed: (_) => onDismiss(),
       background: Container(
-        color: AppColors.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 16),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: _buildLeading(),
-        title: Text(
-          alert.title,
-          style: TextStyle(
-            fontWeight: alert.isRead ? FontWeight.normal : FontWeight.bold,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.error.withOpacity(0.8), AppColors.error],
           ),
+          borderRadius: BorderRadius.circular(16),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              alert.message,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _formatTime(alert.createdAt),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondaryLight,
-                  ),
-            ),
-          ],
-        ),
-        trailing: alert.isRead
-            ? null
-            : Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete_rounded, color: Colors.white, size: 24),
+      ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: GlassContainer(
+          borderRadius: 16,
+          color: alert.isRead
+              ? null
+              : (isDark
+                  ? AppColors.secondary.withOpacity(0.1)
+                  : AppColors.secondary.withOpacity(0.05)),
+          borderColor: alert.isRead
+              ? null
+              : AppColors.secondary.withOpacity(0.3),
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildLeading(),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            alert.title,
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                  fontWeight: alert.isRead ? FontWeight.w500 : FontWeight.bold,
+                                ),
+                          ),
+                        ),
+                        if (!alert.isRead)
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              gradient: AppColors.secondaryGradient,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.secondary.withOpacity(0.5),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      alert.message,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _formatTime(alert.createdAt),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isDark
+                                ? AppColors.textTertiaryDark
+                                : AppColors.textTertiaryLight,
+                          ),
+                    ),
+                  ],
                 ),
               ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildLeading() {
     IconData icon;
-    Color color;
+    Gradient gradient;
 
     switch (alert.type) {
       case AlertType.match:
-        icon = Icons.link;
-        color = AppColors.success;
+        icon = Icons.link_rounded;
+        gradient = AppColors.successGradient;
         break;
       case AlertType.message:
-        icon = Icons.message;
-        color = AppColors.primary;
+        icon = Icons.message_rounded;
+        gradient = AppColors.primaryGradient;
         break;
       case AlertType.statusUpdate:
-        icon = Icons.check_circle;
-        color = AppColors.found;
+        icon = Icons.check_circle_rounded;
+        gradient = AppColors.foundGradient;
         break;
       case AlertType.system:
-        icon = Icons.info;
-        color = AppColors.textSecondaryLight;
+        icon = Icons.info_rounded;
+        gradient = AppColors.accentGradient;
         break;
     }
 
@@ -376,20 +565,20 @@ class _AlertTile extends StatelessWidget {
       return Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(14),
             child: Image.network(
               alert.imageUrl!,
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
-                width: 48,
-                height: 48,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: gradient,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: color),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
             ),
           ),
@@ -397,11 +586,17 @@ class _AlertTile extends StatelessWidget {
             right: -4,
             bottom: -4,
             child: Container(
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                color: color,
+                gradient: gradient,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: (gradient as LinearGradient).colors.first.withOpacity(0.4),
+                    blurRadius: 8,
+                  ),
+                ],
               ),
               child: Icon(icon, size: 12, color: Colors.white),
             ),
@@ -411,13 +606,20 @@ class _AlertTile extends StatelessWidget {
     }
 
     return Container(
-      width: 48,
-      height: 48,
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: (gradient as LinearGradient).colors.first.withOpacity(0.4),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Icon(icon, color: color),
+      child: Icon(icon, color: Colors.white, size: 24),
     );
   }
 

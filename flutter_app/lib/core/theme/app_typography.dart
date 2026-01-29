@@ -2,147 +2,181 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
-/// App typography styles using Google Fonts
+/// App typography styles - iOS/San Francisco inspired
+/// Using Inter as the closest Google Font to SF Pro
 class AppTypography {
   AppTypography._();
 
-  // Using Google Fonts - no need to download font files!
-  static TextStyle get _baseStyle => GoogleFonts.inter();
+  // SF Pro Display equivalent - for large titles
+  static TextStyle get _displayStyle => GoogleFonts.inter();
   
+  // SF Pro Text equivalent - for body text
+  static TextStyle get _textStyle => GoogleFonts.inter();
+
   static String get fontFamily => GoogleFonts.inter().fontFamily ?? 'Inter';
 
-  // Display Styles
+  // ============================================
+  // DISPLAY STYLES (Large Titles - iOS style)
+  // ============================================
   static TextStyle get displayLarge => GoogleFonts.inter(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.5,
+    fontSize: 34,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.4,
     height: 1.2,
   );
 
   static TextStyle get displayMedium => GoogleFonts.inter(
     fontSize: 28,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.25,
-    height: 1.25,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.3,
+    height: 1.22,
   );
 
   static TextStyle get displaySmall => GoogleFonts.inter(
     fontSize: 24,
-    fontWeight: FontWeight.bold,
-    letterSpacing: 0,
-    height: 1.3,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.2,
+    height: 1.25,
   );
 
-  // Headline Styles
+  // ============================================
+  // HEADLINE STYLES (Section Headers)
+  // ============================================
   static TextStyle get headlineLarge => GoogleFonts.inter(
     fontSize: 22,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.35,
+    letterSpacing: -0.2,
+    height: 1.27,
   );
 
   static TextStyle get headlineMedium => GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.4,
+    letterSpacing: -0.1,
+    height: 1.3,
   );
 
   static TextStyle get headlineSmall => GoogleFonts.inter(
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.4,
+    letterSpacing: -0.05,
+    height: 1.35,
   );
 
-  // Title Styles
+  // ============================================
+  // TITLE STYLES (Navigation & List Headers)
+  // ============================================
   static TextStyle get titleLarge => GoogleFonts.inter(
-    fontSize: 18,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0,
-    height: 1.4,
+    fontSize: 17,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.02,
+    height: 1.35,
   );
 
   static TextStyle get titleMedium => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-    height: 1.45,
+    letterSpacing: 0,
+    height: 1.4,
   );
 
   static TextStyle get titleSmall => GoogleFonts.inter(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-    height: 1.45,
+    letterSpacing: 0,
+    height: 1.4,
   );
 
-  // Body Styles
+  // ============================================
+  // BODY STYLES (Content Text)
+  // ============================================
   static TextStyle get bodyLarge => GoogleFonts.inter(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.15,
-    height: 1.5,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.02,
+    height: 1.47,
   );
 
   static TextStyle get bodyMedium => GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.25,
-    height: 1.5,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0,
+    height: 1.47,
   );
 
   static TextStyle get bodySmall => GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-    height: 1.5,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0,
+    height: 1.46,
   );
 
-  // Label Styles
+  // ============================================
+  // LABEL STYLES (Buttons, Tags, Small Elements)
+  // ============================================
   static TextStyle get labelLarge => GoogleFonts.inter(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-    height: 1.4,
+    letterSpacing: 0,
+    height: 1.33,
   );
 
   static TextStyle get labelMedium => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.4,
+    letterSpacing: 0.1,
+    height: 1.33,
   );
 
   static TextStyle get labelSmall => GoogleFonts.inter(
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.4,
+    letterSpacing: 0.1,
+    height: 1.27,
   );
 
-  // Button Text
+  // ============================================
+  // BUTTON TEXT (iOS-style)
+  // ============================================
   static TextStyle get button => GoogleFonts.inter(
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-    height: 1.4,
+    letterSpacing: -0.02,
+    height: 1.18,
   );
 
-  // Caption
+  static TextStyle get buttonSmall => GoogleFonts.inter(
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+    height: 1.2,
+  );
+
+  // ============================================
+  // CAPTION & FOOTNOTE (iOS-style)
+  // ============================================
   static TextStyle get caption => GoogleFonts.inter(
     fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-    height: 1.4,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0,
+    height: 1.33,
   );
 
-  // Overline
+  static TextStyle get footnote => GoogleFonts.inter(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0,
+    height: 1.38,
+  );
+
+  // ============================================
+  // OVERLINE (All Caps Small Text)
+  // ============================================
   static TextStyle get overline => GoogleFonts.inter(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 1.5,
-    height: 1.4,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+    height: 1.27,
   );
 }
 
