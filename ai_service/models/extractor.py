@@ -128,14 +128,19 @@ class ItemExtractor:
         return list(set(tags))
     
     async def extract_from_image(self, detected_objects: List[Dict[str, Any]], ocr_text: Optional[str] = None) -> Dict[str, Any]:
-        result = {"title": None, "description": None, "category": None, "attributes": {}, "location": None, "date": None}
+        result = {"title": None, "description": None, "clean_description": None, "category": None, "attributes": {}, "location": None, "date": None}
         if detected_objects:
             primary = detected_objects[0]
             result["title"] = f"{primary['label'].title()}"
             result["category"] = primary.get("category", "other")
             object_names = [obj["label"] for obj in detected_objects[:3]]
-            result["description"] = f"Image shows: {', '.join(object_names)}"
+            description = f"Image shows: {', '.join(object_names)}"
+            result["description"] = description
+            result["clean_description"] = description
         if ocr_text:
+            # If OCR found text, use it as a better description
+            if ocr_text.strip():
+                result["clean_description"] = self._clean_description(ocr_text)
             from models.ocr import OCRModel
             ocr = OCRModel()
             identifiers = ocr.extract_potential_identifiers(ocr_text)

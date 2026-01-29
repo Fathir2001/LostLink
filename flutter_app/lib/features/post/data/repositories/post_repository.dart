@@ -156,7 +156,7 @@ class PostRepository {
   Future<List<String>> uploadImages(List<String> filePaths) async {
     final List<String> urls = [];
     for (final path in filePaths) {
-      final response = await _apiClient.uploadFile('/upload/image', path);
+      final response = await _apiClient.uploadFile('/upload/image', path, fieldName: 'image');
       final data = response.data['data'] ?? response.data;
       urls.add(data['url']);
     }

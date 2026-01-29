@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 import '../config/env_config.dart';
 import '../config/app_constants.dart';
@@ -86,8 +89,9 @@ class ApiClient {
     Map<String, dynamic>? data,
     void Function(int, int)? onSendProgress,
   }) async {
+    final multipartFile = await _createMultipartFile(filePath, fieldName);
     final formData = FormData.fromMap({
-      fieldName: await MultipartFile.fromFile(filePath),
+      fieldName: multipartFile,
       if (data != null) ...data,
     });
 
@@ -96,6 +100,25 @@ class ApiClient {
       data: formData,
       onSendProgress: onSendProgress,
     );
+  }
+
+  /// Helper method to create MultipartFile that works on both web and native
+  Future<MultipartFile> _createMultipartFile(String path, String fieldName) async {
+    if (kIsWeb) {
+      // On web, the path is a blob URL from image_picker
+      // We need to fetch the bytes from the blob URL
+      final response = await http.get(Uri.parse(path));
+      final bytes = response.bodyBytes;
+      final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      return MultipartFile.fromBytes(
+        bytes,
+        filename: fileName,
+        contentType: DioMediaType('image', 'jpeg'),
+      );
+    } else {
+      // On native platforms, use the file path directly
+      return await MultipartFile.fromFile(path);
+    }
   }
 }
 

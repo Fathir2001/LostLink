@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -482,17 +483,7 @@ class _GlassImageTile extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.file(
-              File(imagePath),
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                decoration: BoxDecoration(
-                  color: AppColors.dividerLight.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.image, color: Colors.white54),
-              ),
-            ),
+            child: _buildImage(),
           ),
           Positioned(
             top: 6,
@@ -523,6 +514,34 @@ class _GlassImageTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage() {
+    Widget errorWidget = Container(
+      decoration: BoxDecoration(
+        color: AppColors.dividerLight.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Icon(Icons.image, color: Colors.white54),
+    );
+
+    // On web, we need to handle file paths differently
+    // XFile from image_picker on web gives us a blob URL
+    if (kIsWeb) {
+      // On web, imagePath from image_picker is a blob URL
+      return Image.network(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => errorWidget,
+      );
+    } else {
+      // On mobile/desktop, use File
+      return Image.file(
+        File(imagePath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => errorWidget,
+      );
+    }
   }
 }
 

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../../core/services/api_client.dart';
 import '../../../../core/config/env_config.dart';
@@ -104,11 +106,10 @@ class AIRepository {
   Future<AIExtractionResult> extractFromImage(List<String> imagePaths) async {
     final formData = FormData();
     
-    for (int i = 0; i < imagePaths.length; i++) {
-      formData.files.add(MapEntry(
-        'images',
-        await MultipartFile.fromFile(imagePaths[i]),
-      ));
+    // Only use the first image for now (AI service expects single image)
+    if (imagePaths.isNotEmpty) {
+      final multipartFile = await _createMultipartFile(imagePaths[0], 'image');
+      formData.files.add(MapEntry('image', multipartFile));
     }
 
     final response = await _aiDio.post(
@@ -127,11 +128,10 @@ class AIRepository {
       'text': text,
     });
     
-    for (int i = 0; i < imagePaths.length; i++) {
-      formData.files.add(MapEntry(
-        'images',
-        await MultipartFile.fromFile(imagePaths[i]),
-      ));
+    // Only use the first image for now (AI service expects single image)
+    if (imagePaths.isNotEmpty) {
+      final multipartFile = await _createMultipartFile(imagePaths[0], 'image');
+      formData.files.add(MapEntry('image', multipartFile));
     }
 
     final response = await _aiDio.post(
@@ -139,6 +139,25 @@ class AIRepository {
       data: formData,
     );
     return AIExtractionResult.fromJson(response.data);
+  }
+
+  /// Helper method to create MultipartFile that works on both web and native
+  Future<MultipartFile> _createMultipartFile(String path, String fieldName) async {
+    if (kIsWeb) {
+      // On web, the path is a blob URL from image_picker
+      // We need to fetch the bytes from the blob URL
+      final response = await http.get(Uri.parse(path));
+      final bytes = response.bodyBytes;
+      final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      return MultipartFile.fromBytes(
+        bytes,
+        filename: fileName,
+        contentType: DioMediaType('image', 'jpeg'),
+      );
+    } else {
+      // On native platforms, use the file path directly
+      return await MultipartFile.fromFile(path);
+    }
   }
 
   /// Generate embeddings for text
