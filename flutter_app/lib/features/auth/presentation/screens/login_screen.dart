@@ -332,7 +332,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             child: Center(
               child: Image.asset(
-                'assets/images/logo.png',
+                'images/logo.png',
                 width: 70,
                 height: 70,
                 errorBuilder: (context, error, stackTrace) {

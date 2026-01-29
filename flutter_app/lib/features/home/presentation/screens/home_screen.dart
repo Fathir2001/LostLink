@@ -104,7 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ],
                         ),
                         child: Image.asset(
-                          'assets/images/logo.png',
+                          'images/logo.png',
                           width: 24,
                           height: 24,
                           errorBuilder: (context, error, stackTrace) {

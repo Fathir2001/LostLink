@@ -244,7 +244,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             ),
             child: Center(
               child: Image.asset(
-                'assets/images/logo.png',
+                'images/logo.png',
                 width: 100,
                 height: 100,
                 errorBuilder: (context, error, stackTrace) {

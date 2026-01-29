@@ -268,7 +268,7 @@ class _GlassSideNavRail extends ConsumerWidget {
                   ],
                 ),
                 child: Image.asset(
-                  'assets/images/logo.png',
+                  'images/logo.png',
                   width: 28,
                   height: 28,
                   errorBuilder: (context, error, stackTrace) {
